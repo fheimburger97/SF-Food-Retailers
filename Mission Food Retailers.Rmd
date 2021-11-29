@@ -91,7 +91,7 @@ Clipboard_Food_R
 
 
 ```{r}
-# write_csv(Clipboard_Food_R, "Mission_Retailers.csv")
+write_csv(Clipboard_Food_R, "Mission_Retailers.csv")
 ```
 
 
