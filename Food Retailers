@@ -1,0 +1,109 @@
+---
+title: ' SF Businesses'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r message=FALSE}
+library(tidyverse)
+library(stringr)
+library(data.table)
+```
+
+
+```{r}
+SF_businesses <- read_csv("SF_Businesses.csv")
+
+SF_businesses
+```
+
+## Valencia Farmers Market
+```{r}
+SF_businesses %>%
+  filter(`DBA Name` == "Bi-Rite Market")
+```
+
+## Learning what an LIC Code is
+```{r}
+SF_businesses %>%
+  filter(`NAICS Code` == "4400-4599") %>%
+  group_by(`LIC Code`) %>%
+  distinct() %>% count()
+```
+
+# Business in the Mission with LIC Code H in it
+```{r}
+Mission_H_Codes <- SF_businesses %>%
+   filter(str_detect(`LIC Code`, "H"), `Neighborhoods - Analysis Boundaries` == "Mission") %>%
+  select(`Ownership Name`, `DBA Name`, `Street Address`, `Business Start Date`, `Business End Date`, `Mail State`, `NAICS Code`, `NAICS Code Description`, `LIC Code`, `LIC Code Description`, `Neighborhoods - Analysis Boundaries`)
+
+Mission_H_Codes %>% select(`Ownership Name`, `DBA Name`, `LIC Code`, `LIC Code Description`)
+```
+
+```{r}
+Mission_H_Codes %>%
+  filter(`LIC Code` != "D26 H60", `LIC Code` != "D19 H79", `LIC Code` != "H24", `LIC Code` != "H25", `LIC Code` != "H26", `LIC Code` != "H29", `LIC Code` != "Hhh", `LIC Code` != "H74") %>% 
+  select(`Ownership Name`, `DBA Name`, `LIC Code`, `LIC Code Description`) %>%
+  group_by(`LIC Code`) %>%
+  distinct() %>% count()
+```
+
+```{r}
+H_strings <- c("H01", "H02", "H03", "H04", "H05", "H06", "H07", "H08", "H09", "H10", "H11", "H12", "H13", "H14", "H16", "H19", "H80", "H81", "H83", "H88", "H89", "H92")
+H_strings
+```
+
+```{r}
+Mission_H_Codes %>%
+  select(`Ownership Name`, `DBA Name`, `LIC Code`, `LIC Code Description`) %>%
+  filter(str_detect(`LIC Code`, c("H0", "H10", "H11", "H12", "H13", "H14", "H15", "H16", "H19", "H80", "H81", "H83", "H92")))
+
+```
+```{R}
+H_strings
+```
+```{r}
+Food_Retail_in_Mission <- Mission_H_Codes %>%
+  select(`Ownership Name`, `DBA Name`, `LIC Code`, `LIC Code Description`) %>%
+  filter(str_detect(`LIC Code`, paste(H_strings, collapse = "|")))
+
+Food_Retail_in_Mission
+```
+```{r}
+View(Food_Retail_in_Mission)
+```
+
+
+args(data.table:::print.data.table)
+function (x, nrows = 100L, digits = NULL, ...) 
+
+```{r}
+Final_Mission_Food_Retailers <- SF_businesses %>%
+  filter(`Neighborhoods - Analysis Boundaries` == "Mission") %>%
+  filter(str_detect(`LIC Code`, paste(H_strings, collapse = "|")))
+Final_Mission_Food_Retailers
+```
+```{R}
+Clipboard_Food_R <- Final_Mission_Food_Retailers %>%
+  select(`Ownership Name`, `DBA Name`, `Street Address`, `Business Start Date`, `Business End Date`, `Location Start Date`, `Location End Date`, `Mail City`, `Mail State`, `NAICS Code`, `NAICS Code Description`, `LIC Code`, `LIC Code Description`)
+Clipboard_Food_R
+```
+
+
+```{r}
+write_csv(Clipboard_Food_R, "Mission_Retailers.csv")
+```
+
+
+library("writexl")
+
+df <- data.frame(Name = c("Jon", "Bill", "Maria", "Ben", "Tina"),
+                 Age = c(23, 41, 32, 58, 26)
+                 )
+
+write_xlsx(df, "C:\\Users\\Ron\\Desktop\\Test\\people.xlsx")
+
+
+
+
